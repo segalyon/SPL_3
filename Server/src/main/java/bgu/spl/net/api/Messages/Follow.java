@@ -7,40 +7,31 @@ import java.util.List;
 public class Follow extends Message {
     //fields
     private boolean follow;
-    private int numOfUsers;
-    private List<String> userNameList;
+    private String username;
 
     //constructor
     public Follow(List<byte[]> words) {
+        // opcode
         super((short) 4);
-        
 
-        userNameList=new LinkedList<>();
-        Byte b=new Byte(byteArr[2]);
-        if(b.intValue()==0){
-            follow=true;
+        // follow/unfollow
+        byte[] followUnfollowByteArr = new byte[1];
+        followUnfollowByteArr[0] = words.get(0)[0];
+        short followUnfollow = bytesToShort(followUnfollowByteArr);
+
+        // username
+        byte[] usernameByteArr = new byte[words.get(0).length - 1];
+        for (int i = 01; i < words.get(0).length; i++){
+            usernameByteArr[i - 1] = words.get(0)[i];
         }
-        else
-            follow=false;
-        this.numOfUsers=numOfUsers;
-        int curr0=5;
-        int next0=-1;
-        for(int i=5;i<byteArr.length;i++){
-            b=new Byte(byteArr[i]);
-            if(b.intValue()==0){
-                next0=i;
-                String username = new String(byteArr, curr0, next0-curr0, StandardCharsets.UTF_8);
-                userNameList.add(username);
-                curr0=next0+1;
-            }
-        }
+        String username = new String(usernameByteArr, StandardCharsets.UTF_8);
     }
 
     public boolean isFollow() {
         return follow;
     }
 
-    public List<String> getUserNameList() {
-        return userNameList;
+    public String getUsername() {
+        return username;
     }
 }
