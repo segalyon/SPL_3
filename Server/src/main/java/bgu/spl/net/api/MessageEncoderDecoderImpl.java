@@ -52,6 +52,11 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     message=new Logout();
                     cleanMessege();
                     break;
+                case 4:
+                    if(words.size()==1)
+                    {
+                        message= new
+                    }
                 case 5:
                     if(words.size()==1){
                         message= new POST(words);
