@@ -56,6 +56,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     if(words.size()==1)
                     {
                         message = new Follow(words);
+                        cleanMessege();
                     }
                 case 5:
                     if(words.size()==1){
@@ -83,7 +84,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     break;
                 case 12:
                     if(words.size()==1) {
-                        message = new Follow(words);
+                        message = new Block(words);
                         cleanMessege();
                     }
                     break;

@@ -1,5 +1,7 @@
 package bgu.spl.net.api.Messages;
 
+import bgu.spl.net.srv.bidi.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,5 +26,8 @@ public class LogStat extends Message {
         if(currentUsername.length() > 0){
             users.add(currentUsername);
         }
+    }
+    public List<String> getUsers(){
+        return users;
     }
 }

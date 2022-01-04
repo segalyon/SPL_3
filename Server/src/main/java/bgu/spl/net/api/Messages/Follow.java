@@ -21,7 +21,7 @@ public class Follow extends Message {
 
         // username
         byte[] usernameByteArr = new byte[words.get(0).length - 1];
-        for (int i = 01; i < words.get(0).length; i++){
+        for (int i = 1; i < words.get(0).length; i++){
             usernameByteArr[i - 1] = words.get(0)[i];
         }
         String username = new String(usernameByteArr, StandardCharsets.UTF_8);
