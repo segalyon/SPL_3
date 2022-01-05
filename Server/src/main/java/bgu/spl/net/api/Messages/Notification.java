@@ -8,8 +8,12 @@ public class Notification extends Message {
     private int pmOrPublic;
     private String postingUser;
     private String content;
-    public Notification(List<byte[]> words){
+    public Notification(int pmOrPublic, String postingUser, String content){
         super((short) 9);
+        this.pmOrPublic=pmOrPublic;
+        this.postingUser=postingUser;
+        this.content=content;
+        /*
         byte[] pmpublic=new byte[1];
         byte[] postuser= new byte[words.get(0).length-1];
         pmpublic[1]= ((byte[])words.get(0))[0];
@@ -20,8 +24,17 @@ public class Notification extends Message {
         }
         this.postingUser=new String(postuser, StandardCharsets.UTF_8);
         this.content=new String(words.get(1), StandardCharsets.UTF_8);
+        */
+    }
+    public int getPmOrPublic(){return pmOrPublic;}
+
+    public String getContent() {
+        return content;
     }
 
+    public String getPostingUser() {
+        return postingUser;
+    }
     /**
      * turn the short of the opcode to a byte array, turn the char of pmOrPublic to a byte array
      * turn the content and posting user strings to a byte array

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Follow extends Message {
     //fields
-    private boolean follow;
+    private short follow;
     private String username;
 
     //constructor
@@ -17,17 +17,17 @@ public class Follow extends Message {
         // follow/unfollow
         byte[] followUnfollowByteArr = new byte[1];
         followUnfollowByteArr[0] = words.get(0)[0];
-        short followUnfollow = bytesToShort(followUnfollowByteArr);
+        follow = bytesToShort(followUnfollowByteArr);
 
         // username
         byte[] usernameByteArr = new byte[words.get(0).length - 1];
         for (int i = 1; i < words.get(0).length; i++){
             usernameByteArr[i - 1] = words.get(0)[i];
         }
-        String username = new String(usernameByteArr, StandardCharsets.UTF_8);
+         username = new String(usernameByteArr, StandardCharsets.UTF_8);
     }
 
-    public boolean isFollow() {
+    public short isFollow() {
         return follow;
     }
 

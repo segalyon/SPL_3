@@ -9,20 +9,22 @@ public class User {
     private String password;
     private String birthday;
     private boolean logedIn;
-    private AtomicInteger numOfPosts;
-    private AtomicInteger conncetionID;
+    private int numOfPosts;
     private List<User> following;
     private List<User> followers;
+    private List<User> blockingUsers;
+    private List<User> blockersUsers;
     public User(String username, String password, String birthday)
     {
         this.username = username;
         this.password = password;
         this.birthday=birthday;
         this.logedIn=false;
-        this.numOfPosts=new AtomicInteger(0);
+        this.numOfPosts=0;
         following=new LinkedList<>();
         followers=new LinkedList<>();
     }
+    public String getBirthday(){return birthday;}
     public List<User> getFollowing() {
         return following;
     }
@@ -46,6 +48,9 @@ public class User {
     public String getPassword() {
         return password;
     }
+    public synchronized void incrementNumOfPosts(){
+        numOfPosts++;
+    }
 
     public boolean getLoginState() {
         return logedIn;
@@ -55,7 +60,7 @@ public class User {
         this.logedIn = logedIn;
     }
 
-    public AtomicInteger getNumOfPosts() {
+    public int getNumOfPosts() {
         return numOfPosts;
     }
     // adding a user to ourlist
@@ -69,12 +74,20 @@ public class User {
         return following.contains(check);
     }
     //removing a user from ourlist
-    public boolean unfollow(User addingUser){
+    public void unfollow(User addingUser){
         if(following.contains(addingUser)){
             following.remove(addingUser);
             addingUser.removeFromFollowers(this);
-            return true;
         }
-        return false;
+    }
+    public boolean didUserBlockedMe(User user){
+        return blockersUsers.contains(user);
+    }
+    public void blockingUser(User user){
+        blockingUsers.add(user);
+        user.someoneBlockedme(this);
+    }
+    public void someoneBlockedme(User user){
+        blockersUsers.add(user);
     }
 }

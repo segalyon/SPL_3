@@ -24,5 +24,6 @@ public class STAT extends Message {
                }
        }
     }
+    public List<String> getUsernames(){return usernames;}
 
 }
