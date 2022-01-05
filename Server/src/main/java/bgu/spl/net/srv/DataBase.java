@@ -19,9 +19,8 @@ public class DataBase {
     private ConcurrentHashMap<String,User >  userByUserName;
     private ConcurrentHashMap<String,Integer> currentUsers;
     private ConcurrentLinkedQueue<Message> posts;
-    //private ConcurrentLinkedQueue<User> registrationOrderList;
     private Object lockerRegister;
-    //private Object lockerLogin;
+    private List<String> filterWords;
 
     private static class SingletonHolder {
         private static DataBase instance = new DataBase();
@@ -35,9 +34,7 @@ public class DataBase {
         this.userByUserName=new ConcurrentHashMap<>();
         this.currentUsers=new ConcurrentHashMap<>();
         this.posts= new ConcurrentLinkedQueue<>();
-        // this.registrationOrderList=new ConcurrentLinkedQueue<>();
-        //this.lockerRegister=new Object();
-        //this.lockerLogin=new Object();
+        lockerRegister = new Object();
     }
     public void addToPosts(Message postpm){
         posts.add(postpm);
@@ -59,14 +56,6 @@ public class DataBase {
         //registrationOrderList.add(user);
     }
 
-    public User tryLogIn(String username, String password) {
-        if (userByUserName.containsKey(username)) {
-            if (userByUserName.get(username).getPassword().equals(password) && userByUserName.get(username).isLogedIn()==false)
-                return userByUserName.get(username);
-        }
-        return null;
-    }
-
     //returns a user by the username, if no such user exists returns null
     public User getUserByUsername(String username){
         return userByUserName.get(username);
@@ -85,32 +74,14 @@ public class DataBase {
         return currentUsers.get(username)!=null;
     }
 
-//    public String getRegistrationOrderList(){
-//        String list="";
-//        for (User u:registrationOrderList) {
-//            list+=u.getUsername()+"\0";
-//        }
-//        return list;
-//    }
-
- //   public short getRegistrationListSize(){
- //       return(short)registrationOrderList.size();
- //   }
-public void mutualBlocking(User user){
-
-}
     public List<User> getFollowers(User user){
         return user.getFollowers();
     }
-    public LinkedList<Message>getWaitingMessages(User user) {
-        return waitingMessageListByUser.get(user);
-    }
-
     public Object getLockerRegister() {
         return lockerRegister;
     }
-//
-//    public Object getLockerLogin() {
-//        return lockerLogin;
-//    }
+    public void filterWords(List<String> filterWords){
+        this.filterWords=filterWords;
+    }
+     public List<String> getFilterWords(){return filterWords;}
 }

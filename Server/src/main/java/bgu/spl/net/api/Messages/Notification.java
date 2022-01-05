@@ -1,30 +1,20 @@
 package bgu.spl.net.api.Messages;
 
+import bgu.spl.net.srv.DataBase;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class Notification extends Message {
     //fields
-    private int pmOrPublic;
+    private short pmOrPublic;
     private String postingUser;
     private String content;
-    public Notification(int pmOrPublic, String postingUser, String content){
+    public Notification(short pmOrPublic, String postingUser, String content){
         super((short) 9);
         this.pmOrPublic=pmOrPublic;
         this.postingUser=postingUser;
         this.content=content;
-        /*
-        byte[] pmpublic=new byte[1];
-        byte[] postuser= new byte[words.get(0).length-1];
-        pmpublic[1]= ((byte[])words.get(0))[0];
-        this.pmOrPublic=Integer.parseInt(new String(pmpublic, StandardCharsets.UTF_8));
-        for(int i=0; i<pmpublic.length;i++)
-        {
-            postuser[i]=((byte[])words.get(0))[i+1];
-        }
-        this.postingUser=new String(postuser, StandardCharsets.UTF_8);
-        this.content=new String(words.get(1), StandardCharsets.UTF_8);
-        */
     }
     public int getPmOrPublic(){return pmOrPublic;}
 
@@ -35,31 +25,54 @@ public class Notification extends Message {
     public String getPostingUser() {
         return postingUser;
     }
-    /**
-     * turn the short of the opcode to a byte array, turn the char of pmOrPublic to a byte array
-     * turn the content and posting user strings to a byte array
-     * joins all the array to create a joined array
-     * @return byte array that represents the message
-     */
-    /*
-    public byte[] messageToEncode(){
-        byte[]tmpOpcode=shortToBytes(getOpcode());
-        byte[] tmpPmOrPublic=new byte[1];
-        if(pmOrPublic=='1')
-            tmpPmOrPublic[0]=(byte)1;
-        else
-            tmpPmOrPublic[0]=(byte)0;
-        String stringOfPostInfo=""+postingUser+"\0"+content+"\0";
-        byte[]postInfo=stringOfPostInfo.getBytes();
-        int sizeOfEncodedArray=3+postInfo.length;
-        byte[]encodedArray=new byte[sizeOfEncodedArray];
-        encodedArray[0]=tmpOpcode[0];
-        encodedArray[1]=tmpOpcode[1];
-        encodedArray[2]=tmpPmOrPublic[0];
-        for(int i=3; i<encodedArray.length; i++)
-            encodedArray[i]=postInfo[i-3];
-        return encodedArray;
 
+    public byte[] messageToEncode(){
+        String filteredContent = content;
+        byte[] opcodeArr = shortToBytes(getOpcode());
+        byte[] typeArr = shortToBytes(pmOrPublic);
+        byte[] seperatorArr = shortToBytes((short)'\0');
+        byte[] postingUserArr = postingUser.getBytes();
+        // filter content
+        if (pmOrPublic == 1){
+            DataBase db= DataBase.getInstance();
+            List<String> filter= db.getFilterWords();
+            for (String word: filter) {
+                filteredContent.replaceAll("\\b" + word + "\\b", "<filtered>");
+            }
+//            String result="";
+//            String current="";
+//            for(char c:content.toCharArray())
+//            {
+//                if(c !=' ')
+//                    current+=c;
+//                else{
+//                    if(!filter.contains(current))
+//                        result+=current+" ";
+//                    else result+="<filtered> ";
+//                    current="";
+//                }
+//            }
+//            return result.getBytes();
+        }
+        byte[] contentArr = filteredContent.getBytes();
+        byte[] res = new byte[5 + contentArr.length + postingUserArr.length];
+        // write
+        res[0] = opcodeArr[0];
+        res[1] = opcodeArr[1];
+        res[2] = typeArr[0];
+        //
+        for(int i = 0; i < postingUserArr.length; i++){
+            res[i + 3] = postingUserArr[i];
+        }
+        //
+        res[postingUserArr.length + 3] = seperatorArr[0];
+        //
+        for(int i = 0; i < contentArr.length; i++){
+            res[i + postingUserArr.length + 4] = contentArr[i];
+        }
+        //
+        res[postingUserArr.length + contentArr.length + 4] = seperatorArr[0];
+        return res;
     }
 /*
     /*

@@ -18,9 +18,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     //fields
     private Connections connection;
     private int connectionId;
+    private boolean shouldTerminate;
     private User user;
 
     public BidiMessagingProtocolImpl() {
+        shouldTerminate = false;
     }
 
     @Override
@@ -29,14 +31,10 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         this.connectionId=connectionId;
     }
     @Override
-    public  boolean shouldTerminate(){
-        return true;
+    public boolean shouldTerminate(){
+        return shouldTerminate;
     }
 
-    /**
-     * Recieves a message and according to the opcode of the message handles the process
-     * @param message
-     */
     @Override
     public void process(Message message) {
         DataBase db = DataBase.getInstance();
@@ -197,27 +195,6 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    /**
-
-    @Override
-    public boolean shouldTerminate() {
-        return false;
-    }
-
-
-    /**
-     * for the followUnfollow process message:
-     * receives a list of users and returns a string of their usernames seperated by '\0'
-     * @param list
-     * @return
-     */
-    private String ToStringtmpUserLIst(List<User> list){
-        String s="";
-        for (User u:list) {
-            s+=u.getUsername()+"\0";
-        }
-        return s;
-    }
     private void sendStatOfUser(User receipentUser, short opcode){
         List<byte[]> result=new ArrayList<>();
         String birthday=receipentUser.getBirthday();
@@ -244,36 +221,4 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
         else  connection.send(db.getConnection(username),notification);
     }
-    /**
-     * for the stat process message:
-     * given a user, creates a list of opcodes for the creation of the ack message in the stat process
-     * @param statUser
-     * @param opcode
-     * @return
-     */
-    private ConcurrentLinkedQueue ToShortStatMessage(User statUser,short opcode){
-        ConcurrentLinkedQueue<Short> tmp=new ConcurrentLinkedQueue();
-        tmp.add(opcode);
-        tmp.add(statUser.getNumOfPosts().shortValue());
-        tmp.add((short)statUser.getFollowers().size());
-        tmp.add((short)statUser.getFollowing().size());
-        return tmp;
-    }
-
-
-
-    /**
-     * given a list, creates a list without repetitions
-     * @param list
-     * @return
-     */
-    public LinkedList<String> SetList(LinkedList<String> list){
-        LinkedList<String> setList=new LinkedList<>();
-        for (String s:list) {
-            if(!setList.contains(s))
-                setList.add(s);
-        }
-        return setList;
-    }
-
 }

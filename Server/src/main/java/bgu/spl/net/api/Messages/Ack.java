@@ -16,32 +16,31 @@ public class Ack extends Message {
         this.optional = optional;
     }
 
-    /**
-     * transforms each short in the shortQueue to byte array and then the string Optional to byte array
-     * joins all the array to create a joined array
-     *
-     * @return byte array that represents the message
-     */
     public byte[] messageToEncode() {
-        LinkedList<byte[]> encodedArrayList = new LinkedList<>();
-//        int counter=shortQueue.size()*2+2;//the number of byte cells in the returned array-> 2 bytes for each short in the short queue plus 2 bytes for the opcode we add before the while
-//        encodedArrayList.add(shortToBytes(getOpcode()));//add the opcode to the list
-//        while(!shortQueue.isEmpty()){
-//            encodedArrayList.add(shortToBytes(shortQueue.remove()));
-//        }
-//        if(optional!=null) {
-//            encodedArrayList.add(optional.getBytes());
-//            counter += encodedArrayList.get(encodedArrayList.size() - 1).length;// gets the length of the array made from the string
-//        }
-//        byte[]encodedArray=new byte[counter];
-//        int index=0;
-//        for (byte[] byteArray:encodedArrayList) {
-//            for (byte b: byteArray) {
-//                encodedArray[index]=b;
-//                index++;
-//            }
-//        }
-//        return  encodedArray;
+        byte[] byteArr = new byte[2];
+        byte[] byteArrOpcode =shortToBytes(msgOpcode);
+        //
+        if (optional != null){
+            // first get total size
+            int size = 2;
+            for (byte[] bytes: optional) {
+                size += bytes.length;
+            }
+            byteArr = new byte[size];
+            // loop all bytes and add them to the arr
+            int counter = 2;
+            for (byte[] bytes: optional) {
+                for (int i = 0; i < bytes.length; i++) {
+                    byteArr[i + counter] = bytes[i];
+                }
+                counter += bytes.length;
+            }
+        }
+        // also add the opcode
+        byteArr[0] = byteArrOpcode[0];
+        byteArr[1] = byteArrOpcode[1];
+        //
+        return byteArr;
     }
 
 }

@@ -52,4 +52,14 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         connected = false;
         sock.close();
     }
+
+    public void send(T msg){
+        byte[] encoded = encdec.encode(msg);
+        try {
+            out.write(encoded);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

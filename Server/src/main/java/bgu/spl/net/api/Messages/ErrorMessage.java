@@ -13,10 +13,10 @@ public class ErrorMessage extends Message {
      * @return byte array which represents the message
      */
     public byte[] messageToEncode() {
-        byte[]tmpOpcode=shortToBytes(getOpcode());
-        byte[]tmpMessageOpcode=shortToBytes(msgOpcode);
-        byte[] sendresult={tmpOpcode[0], tmpOpcode[1], tmpMessageOpcode[0], tmpMessageOpcode[1]};
-        return sendresult;
+        byte[] ArrOpcode=shortToBytes(getOpcode());
+        byte[] ArrMsgOpcode=shortToBytes(msgOpcode);
+        byte[] res = {ArrOpcode[0], ArrOpcode[1], ArrMsgOpcode[0], ArrMsgOpcode[1]};
+        return res;
     }
 
     // public String toString(){return  getOpcode()+""+messageOpcode;}

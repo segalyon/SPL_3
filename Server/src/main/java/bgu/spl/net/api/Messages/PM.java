@@ -25,8 +25,4 @@ public class PM extends Message {
         return content;
     }
     public String getSendingDateAndTime(){return sendingDateAndTime;}
-
-    public void setSendingUser(String sendingUser) {
-        this.sendingUser = sendingUser;
-    }
 }
