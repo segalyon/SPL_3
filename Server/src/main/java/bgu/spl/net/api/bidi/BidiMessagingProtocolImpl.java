@@ -39,7 +39,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     public void process(Message message) {
         DataBase db = DataBase.getInstance();
         Short opcode=message.getOpcode();
-        if(!db.isConnected(user.getUsername()) &&(opcode.intValue()>2)) {
+        if((opcode.intValue()>2) && user != null && !db.isConnected(user.getUsername())) {
             connection.send(connectionId,new ErrorMessage(message.getOpcode()));
         }
         else {
@@ -60,11 +60,15 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     if (!(db.getUserByUsername(login.getUsername()) == null)) {
                         if (db.isConnected(login.getUsername())) {
                             db.loginUser(login, connectionId);
-                            connection.send(connectionId, new Ack(message.getOpcode(), null));
-                            Queue<Message> notes=db.getWaitingMessagesForThisUser(login.getUsername());
-                            while(!notes.isEmpty()){
-                                connection.send(connectionId,notes.remove());
+                            this.user = db.getUserByUsername(login.getUsername());
+                            if(user.getPassword() == login.getPassword() && login.getCaptcha() == "1") {
+                                connection.send(connectionId, new Ack(message.getOpcode(), null));
+                                Queue<Message> notes = db.getWaitingMessagesForThisUser(login.getUsername());
+                                while (!notes.isEmpty()) {
+                                    connection.send(connectionId, notes.remove());
+                                }
                             }
+                            else connection.send(connectionId, new ErrorMessage(message.getOpcode()));
                         } else connection.send(connectionId, new ErrorMessage(message.getOpcode()));
                     } else {
                         connection.send(connectionId, new ErrorMessage(message.getOpcode()));
@@ -74,8 +78,12 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     Logout logout = (Logout) message;
                     if (!(db.getUserByUsername(user.getUsername()) == null)) {
                         if (!(db.isConnected(user.getUsername()))) {
+                            // close handler and connection
                             db.removeConnection(user.getUsername());
-                        } else connection.send(connectionId, new ErrorMessage(message.getOpcode()));
+                            connection.disconnect(connectionId); // remove handler and connection
+                            //
+                        }
+                        else connection.send(connectionId, new ErrorMessage(message.getOpcode()));
                     } else connection.send(connectionId, new ErrorMessage(message.getOpcode()));
                     break;
                 case 4:

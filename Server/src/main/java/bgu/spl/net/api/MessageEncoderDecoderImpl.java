@@ -19,6 +19,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
         // add new word if seen seperator and no opcode as benn detected
         if(nextByte=='\0' && Opcode != null){
             words.add(listToArray(currentWord));
+            cleanWord();
         }
         else {
             currentWord.add(nextByte);
@@ -41,7 +42,7 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                     }
                     break;
                 case 2:
-                    if(words.size()==2){
+                    if(words.size()==2 && currentWord.size() == 1){
                         byte[] captcha= new byte[1];
                         captcha[0]=nextByte;
                         message=new Login(words, captcha);

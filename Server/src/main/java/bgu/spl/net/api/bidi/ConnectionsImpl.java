@@ -1,23 +1,25 @@
 package bgu.spl.net.api.bidi;
 import bgu.spl.net.srv.ConnectionHandler;
+
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionsImpl<T> implements Connections{
     //fields
-    private ConcurrentHashMap<Integer, ConnectionHandler> connectionHandlerByID;
+    private ConcurrentHashMap<Integer, ConnectionHandler> connectionsMap;
 
     public ConnectionsImpl() {
-        connectionHandlerByID=new ConcurrentHashMap<>();
+        connectionsMap=new ConcurrentHashMap<>();
     }
 
     @Override
     public boolean send(int connectionId, Object msg) {
-        if (!connectionHandlerByID.containsKey(connectionId))
+        if (!connectionsMap.containsKey(connectionId))
             return false;
         else{
 
-            ConnectionHandler handler=connectionHandlerByID.get(connectionId);
+            ConnectionHandler handler=connectionsMap.get(connectionId);
             handler.send(msg);
             return true;
         }
@@ -25,20 +27,26 @@ public class ConnectionsImpl<T> implements Connections{
 
     @Override
     public void broadcast(Object msg) {
-        for (ConnectionHandler h:connectionHandlerByID.values()) {
+        for (ConnectionHandler h:connectionsMap.values()) {
             h.send(msg);
         }
 
     }
 
     @Override
-    public void disconnect(int connectionId) { //remove a connection handler from the hash map
-        connectionHandlerByID.remove(connectionId);
+    public void disconnect(int connectionId) {
+        ConnectionHandler handler = connectionsMap.remove(connectionId);
+        try {
+            handler.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    // adds a connection handler to the hash map of connections id by connection handler
-    public void addClient(AtomicInteger connectionId, ConnectionHandler handler){
-        connectionHandlerByID.put(connectionId.intValue(),handler);
+    public synchronized int initConnection(ConnectionHandler handler){
+        int id = connectionsMap.size() + 1;
+        connectionsMap.put(id, handler);
+        return id;
     }
 }
 

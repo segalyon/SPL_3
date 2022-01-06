@@ -10,7 +10,7 @@ void ReceiverChannel::run() {
         string msg;
         // NOTIFICATION
         if (opcode == 9) {
-            msg += "NOTIFICATION";
+            msg = "NOTIFICATION";
             // public/PM
             char PMorPublic[1];
             connection.getBytes(PMorPublic, 1);
@@ -33,21 +33,21 @@ void ReceiverChannel::run() {
             char msgOpcodeArr[2];
             connection.getBytes(msgOpcodeArr, 2);
             short msgOpcode = bytesToShort(msgOpcodeArr);
-            msg += "ACK " + msgOpcode;
+            msg = "ACK " + msgOpcode;
             //
             string optionalArg;
-            bool isArg = connection.getFrameAscii(optionalArg, ' ');
-            while(isArg) {
-                msg += " " + optionalArg;
-                isArg = connection.getFrameAscii(optionalArg, ' ');
-            }
+//            bool isArg = connection.getFrameAscii(optionalArg, ' ');
+//            while(isArg) {
+//                msg += " " + optionalArg;
+//                isArg = connection.getFrameAscii(optionalArg, ' ');
+//            }
         }
         // ERROR
         if (opcode == 11) {
             char errorArr[2];
             connection.getBytes(errorArr, 2);
             short error = bytesToShort(errorArr);
-            msg += "ERROR " + error;
+            msg = "ERROR " + std::to_string(error);
         }
 
         // print

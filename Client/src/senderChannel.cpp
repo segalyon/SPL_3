@@ -34,7 +34,13 @@ void SenderChannel::run() {
 
             // send captcha at the end without separator at the end
             char captchaArr[1];
-            short captcha = (short)stoi(inputVectors[3]);
+            short captcha;
+            if (inputVectors.size() > 3){
+                captcha = (short)stoi(inputVectors[3]);
+            }
+            else{
+                captcha = 0;
+            }
             shortToBytes(captcha, captchaArr);
             connection.sendBytes(captchaArr, 1);
         }
