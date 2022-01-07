@@ -39,7 +39,10 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     public void process(Message message) {
         DataBase db = DataBase.getInstance();
         Short opcode=message.getOpcode();
-        if((opcode.intValue()>2) && user != null && !db.isConnected(user.getUsername())) {
+        if(opcode.intValue()>2 && user == null){
+            connection.send(connectionId,new ErrorMessage(message.getOpcode()));
+        }
+        else if((opcode.intValue()>2) && !db.isConnected(user.getUsername())) {
             connection.send(connectionId,new ErrorMessage(message.getOpcode()));
         }
         else {
@@ -48,7 +51,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     Register register = (Register) message;
                     synchronized (db.getLockerRegister()) {
                         if (!db.isRegisterd(register.getUsername())) {
-                            db.registerUser(register);
+                            db.registerUser(register, connectionId);
                             connection.send(connectionId, new Ack(message.getOpcode(), null));
                         } else {
                             connection.send(connectionId, new ErrorMessage(message.getOpcode()));
@@ -58,14 +61,16 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 case 2:
                     Login login = (Login) message;
                     if (!(db.getUserByUsername(login.getUsername()) == null)) {
-                        if (db.isConnected(login.getUsername())) {
-                            db.loginUser(login, connectionId);
-                            this.user = db.getUserByUsername(login.getUsername());
-                            if(user.getPassword() == login.getPassword() && login.getCaptcha() == "1") {
+                        if (!db.isConnected(login.getUsername())) {
+                            if(db.getUserByUsername(login.getUsername()).getPassword().equals(login.getPassword()) && login.getCaptcha() == "1") {
+                                db.loginUser(login, connectionId);
+                                this.user = db.getUserByUsername(login.getUsername());
                                 connection.send(connectionId, new Ack(message.getOpcode(), null));
                                 Queue<Message> notes = db.getWaitingMessagesForThisUser(login.getUsername());
-                                while (!notes.isEmpty()) {
-                                    connection.send(connectionId, notes.remove());
+                                if(notes!= null) {
+                                    while (!notes.isEmpty()) {
+                                        connection.send(connectionId, notes.remove());
+                                    }
                                 }
                             }
                             else connection.send(connectionId, new ErrorMessage(message.getOpcode()));
@@ -77,7 +82,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 case 3:
                     Logout logout = (Logout) message;
                     if (!(db.getUserByUsername(user.getUsername()) == null)) {
-                        if (!(db.isConnected(user.getUsername()))) {
+                        if (db.isConnected(user.getUsername())) {
+                            connection.send(connectionId, new Ack(message.getOpcode(), null));
                             // close handler and connection
                             db.removeConnection(user.getUsername());
                             connection.disconnect(connectionId); // remove handler and connection

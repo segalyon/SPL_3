@@ -33,7 +33,7 @@ void ReceiverChannel::run() {
             char msgOpcodeArr[2];
             connection.getBytes(msgOpcodeArr, 2);
             short msgOpcode = bytesToShort(msgOpcodeArr);
-            msg = "ACK " + msgOpcode;
+            msg = "ACK " + std::to_string(msgOpcode);
             //
             string optionalArg;
 //            bool isArg = connection.getFrameAscii(optionalArg, ' ');
@@ -58,7 +58,6 @@ void ReceiverChannel::run() {
             loginState = true;
         }
         if(msg == "ACK 3") {
-            loginState = false;
             isRunning = false;
             connection.close();
         }

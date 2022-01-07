@@ -17,18 +17,19 @@ public class Ack extends Message {
     }
 
     public byte[] messageToEncode() {
-        byte[] byteArr = new byte[2];
-        byte[] byteArrOpcode =shortToBytes(msgOpcode);
+        byte[] byteArr = new byte[4];
+        byte[] byteArrOpcode =shortToBytes(getOpcode());
+        byte[] byteArrMsgOpcode =shortToBytes(msgOpcode);
         //
         if (optional != null){
             // first get total size
-            int size = 2;
+            int size = 4;
             for (byte[] bytes: optional) {
                 size += bytes.length;
             }
             byteArr = new byte[size];
             // loop all bytes and add them to the arr
-            int counter = 2;
+            int counter = 4;
             for (byte[] bytes: optional) {
                 for (int i = 0; i < bytes.length; i++) {
                     byteArr[i + counter] = bytes[i];
@@ -39,6 +40,8 @@ public class Ack extends Message {
         // also add the opcode
         byteArr[0] = byteArrOpcode[0];
         byteArr[1] = byteArrOpcode[1];
+        byteArr[2] = byteArrMsgOpcode[0];
+        byteArr[3] = byteArrMsgOpcode[1];
         //
         return byteArr;
     }

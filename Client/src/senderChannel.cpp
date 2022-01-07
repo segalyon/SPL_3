@@ -23,6 +23,7 @@ void SenderChannel::run() {
             connection.sendBytes(byteArr, 2);
             connection.sendFrameAscii(inputVectors[1], '\0');
             connection.sendFrameAscii(inputVectors[2], '\0');
+            connection.sendFrameAscii(inputVectors[3], '\0');
         }
         ///
         if (actionName == "LOGIN") {
@@ -41,7 +42,7 @@ void SenderChannel::run() {
             else{
                 captcha = 0;
             }
-            shortToBytes(captcha, captchaArr);
+            captchaArr[0]=captcha;
             connection.sendBytes(captchaArr, 1);
         }
         ///
@@ -62,10 +63,10 @@ void SenderChannel::run() {
             // send follow/unfollow without separator at the end
             char followArr[1];
             short follow = (short)stoi(inputVectors[1]);
-            shortToBytes(follow, followArr);
+            followArr[0] = follow;
             connection.sendBytes(followArr, 1);
             //
-            connection.sendBytes(inputVectors[2].c_str(), 1);
+            connection.sendFrameAscii(inputVectors[2].c_str(), '\0');
         }
         ///
         if (actionName == "POST") {
@@ -123,6 +124,9 @@ void SenderChannel::run() {
             //
             connection.sendFrameAscii(inputVectors[1], '\0');
         }
+
+        string s = ";";
+        connection.sendBytes(s.c_str(), 1);
         inputVectors.clear();
     }
 }

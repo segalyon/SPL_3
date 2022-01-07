@@ -43,6 +43,7 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
             throw boost::system::system_error(error);
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
+        throw;
         return false;
     }
     return true;

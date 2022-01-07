@@ -49,11 +49,10 @@ public class DataBase {
         return userByUserName.containsKey(username);
     }
 
-    public synchronized void registerUser(Register register){
+    public synchronized void registerUser(Register register, Integer connnectionID){
         User user=new User(register.getUsername(), register.getPassword(), register.getBirthday());
         waitingMessageListByUser.put(user, new LinkedList<>());
         userByUserName.put(register.getUsername(),user);
-        //registrationOrderList.add(user);
     }
 
     //returns a user by the username, if no such user exists returns null

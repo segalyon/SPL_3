@@ -17,7 +17,12 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
 
         Message message = null;
         // add new word if seen seperator and no opcode as benn detected
-        if(nextByte=='\0' && Opcode != null){
+        if(nextByte == ';'){
+        }
+        else if(nextByte=='\0' && Opcode != null){
+            if (currentWord.size() == 0){ // if no word before, then the 0 is a flag
+                currentWord.add(nextByte);
+            }
             words.add(listToArray(currentWord));
             cleanWord();
         }
@@ -32,62 +37,61 @@ public class MessageEncoderDecoderImpl implements MessageEncoderDecoder<Message>
                 cleanWord();
             }
         }
-        if (Opcode != null) {
+        if (Opcode != null && nextByte == ';') {
             //
             switch (Opcode.intValue()){
                 case 1:
-                    if (words.size() == 3) {
+                    //if (words.size() == 3) {
                         message = new Register(words);
                         cleanMessege();
-                    }
+                    //}
                     break;
                 case 2:
-                    if(words.size()==2 && currentWord.size() == 1){
-                        byte[] captcha= new byte[1];
-                        captcha[0]=nextByte;
-                        message=new Login(words, captcha);
+                        if(words.size()==2)
+                            words.add(listToArray(currentWord));
+                        message=new Login(words);
                         cleanMessege();
-                    }
                     break;
                 case 3:
                     message=new Logout();
                     cleanMessege();
                     break;
                 case 4:
-                    if(words.size()==1)
-                    {
+                    //if(words.size()== 2)
+                    //{
                         message = new Follow(words);
                         cleanMessege();
-                    }
+                   // }
+                    break;
                 case 5:
-                    if(words.size()==1){
+                    //if(words.size()==1){
                         message= new POST(words);
                         cleanMessege();
-                    }
+                  //  }
                     break;
                 case 6:
-                    if(words.size()==3){
+                   // if(words.size()==3){
                         message= new PM(words);
                         cleanMessege();
-                    }
+                   // }
                     break;
                 case 7:
-                    if(words.size()==1){
+                   // if(words.size()==1){
                         message=new LogStat(words);
                         cleanMessege();
-                    }
+                    //}
                     break;
                 case 8:
-                    if(words.size()==1){
+                   // if(words.size()==1){
                         message=new STAT(words);
                         cleanMessege();
-                    }
+                  //  }
                     break;
                 case 12:
-                    if(words.size()==1) {
+                   // if(words.size()==1) {
                         message = new Block(words);
                         cleanMessege();
-                    }
+                   // }
                     break;
 
 
