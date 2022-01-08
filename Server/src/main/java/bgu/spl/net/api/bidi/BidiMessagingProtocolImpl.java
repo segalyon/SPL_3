@@ -86,6 +86,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                             connection.send(connectionId, new Ack(message.getOpcode(), null));
                             // close handler and connection
                             db.removeConnection(user.getUsername());
+                            shouldTerminate = true;
                             connection.disconnect(connectionId); // remove handler and connection
                             //
                         }

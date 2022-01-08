@@ -36,11 +36,11 @@ public class ConnectionsImpl<T> implements Connections{
     @Override
     public void disconnect(int connectionId) {
         ConnectionHandler handler = connectionsMap.remove(connectionId);
-        try {
-            handler.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            handler.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public synchronized int initConnection(ConnectionHandler handler){
