@@ -98,7 +98,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                         List<byte[]> optional = new LinkedList<>();
                         optional.add(shortToBytes(follow.isFollow()));
                         optional.add(follow.getUsername().getBytes());
-                        optional.add(shortToBytes((short)'\0'));
+                        optional.add(new byte[]{ '\0' });
                         if (!user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 1) {
                             user.follow(db.getUserByUsername(follow.getUsername()));
                             connection.send(connectionId, new Ack(message.getOpcode(), optional));
@@ -172,8 +172,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     }
                     break;
                 case 8:
-                    boolean isFine=true;
                     STAT stat=(STAT) message;
+                    boolean isFine=true;
                     for(String s:stat.getUsernames()){
                         User current=db.getUserByUsername(s);
                         if(current==null) {
