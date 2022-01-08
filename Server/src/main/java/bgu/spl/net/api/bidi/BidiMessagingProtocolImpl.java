@@ -102,11 +102,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                         optional.add(new byte[]{ '\0' });
                         User spe = db.getUserByUsername(follow.getUsername());
                         if(!user.didUserBlockedMe(spe)) {
-                            if (!user.isFollowing(spe) && follow.isFollow() == (short) 1) {
+                            if (!user.isFollowing(spe) && follow.isFollow() == (short) 0) {
                                 user.follow(spe);
                                 connection.send(connectionId, new Ack(message.getOpcode(), optional));
                                 break;
-                            } else if (user.isFollowing(spe) && follow.isFollow() == (short) 0) {
+                            } else if (user.isFollowing(spe) && follow.isFollow() == (short) 1) {
                                 user.unfollow(spe);
                                 connection.send(connectionId, new Ack(message.getOpcode(), optional));
                                 break;
@@ -163,7 +163,26 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     if (!success) {
                         connection.send(connectionId, new ErrorMessage(message.getOpcode()));
                     } else {
-                        sendNotificationToUser(pm.getUsername(), user.getUsername(), (short) 1, pm.getContent());
+                        String result="";
+                        String content= pm.getContent();
+                        String currentword="";
+                        int counter=0;
+                        for(char c:content.toCharArray()){
+                            counter++;
+                            if(c!=' ')
+                                currentword+=c;
+                            else if(db.getFilterWords().contains(currentword)){
+                                result+="<filtered> ";
+                                currentword="";
+                            }
+                            else {result+=currentword; currentword="";}
+                            if(counter==content.length()) {
+                                if (!db.getFilterWords().contains(currentword)) {
+                                    result += currentword;
+                                } else result += "<filtered>";
+                            }
+                        }
+                        sendNotificationToUser(pm.getUsername(), user.getUsername(), (short) 1, result);
                       //  db.addToPosts(pm);
                     }
                     break;
