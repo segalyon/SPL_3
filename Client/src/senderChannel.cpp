@@ -63,7 +63,7 @@ void SenderChannel::run() {
             // send follow/unfollow without separator at the end
             char followArr[1];
             short follow = (short)stoi(inputVectors[1]);
-            followArr[0] = follow;
+            followArr[0] = (short)follow;
             connection.sendBytes(followArr, 1);
             //
             connection.sendFrameAscii(inputVectors[2].c_str(), '\0');
@@ -77,7 +77,7 @@ void SenderChannel::run() {
             string merge = "";
             if(inputVectors.size() > 1) {
                 merge = inputVectors[1];
-                for (int i = 2; i < inputVectors.size() - 1; ++i) {
+                for (int i = 2; i < inputVectors.size(); ++i) {
                     merge += " " + inputVectors[i];
                 }
             }

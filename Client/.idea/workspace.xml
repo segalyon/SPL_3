@@ -92,7 +92,8 @@
       <workItem from="1641034953726" duration="28658000" />
       <workItem from="1641497056216" duration="1954000" />
       <workItem from="1641499111166" duration="24000" />
-      <workItem from="1641499193808" duration="8496000" />
+      <workItem from="1641499193808" duration="17547000" />
+      <workItem from="1641645113721" duration="1667000" />
     </task>
     <servers />
   </component>
@@ -103,9 +104,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/senderChannel.cpp</url>
-          <line>63</line>
-          <option name="timeStamp" value="10" />
+          <url>file://$PROJECT_DIR$/src/receiverChannel.cpp</url>
+          <line>17</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/receiverChannel.cpp</url>
+          <line>7</line>
+          <option name="timeStamp" value="21" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -116,5 +122,10 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CLionNativeAppRunConfigurationType">
+        <watch expression="msg + &quot; &quot; + username" language="ObjectiveC" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

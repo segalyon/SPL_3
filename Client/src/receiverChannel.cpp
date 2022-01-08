@@ -7,7 +7,7 @@ void ReceiverChannel::run() {
         connection.getBytes(opcodeArr, 2);
         short opcode = bytesToShort(opcodeArr);
         ///
-        string msg;
+        std::string msg;
         // NOTIFICATION
         if (opcode == 9) {
             msg = "NOTIFICATION";
@@ -15,18 +15,18 @@ void ReceiverChannel::run() {
             char PMorPublic[1];
             connection.getBytes(PMorPublic, 1);
             short pmOrPublic = bytesToShort(PMorPublic);
-            if(pmOrPublic==1)
+            if(pmOrPublic==2)
                 msg += " Public";
             else
                 msg += " PM";
             // username
-            string username;
+            std::string username;
             connection.getFrameAscii(username, '\0');
-            msg += username;
+            msg = msg + " " + username;
             // content
-            string content;
+            std::string content;
             connection.getFrameAscii(content, '\0');
-            msg += content;
+            msg = msg + " " + content;
         }
         // ACK
         if (opcode == 10) {
@@ -35,6 +35,33 @@ void ReceiverChannel::run() {
             short msgOpcode = bytesToShort(msgOpcodeArr);
             msg = "ACK " + std::to_string(msgOpcode);
             //
+            if(msgOpcode == 7 || msgOpcode == 8){
+                char ageArr[2];
+                connection.getBytes(ageArr, 2);
+                short age = bytesToShort(ageArr);
+                //
+                char numPostsArr[2];
+                connection.getBytes(numPostsArr, 2);
+                short numPosts = bytesToShort(numPostsArr);
+                //
+                char numFollowersArr[2];
+                connection.getBytes(numFollowersArr, 2);
+                short numFollowers = bytesToShort(numFollowersArr);
+                //
+                char numFollowingArr[2];
+                connection.getBytes(numFollowingArr, 2);
+                short numFollowing = bytesToShort(numFollowingArr);
+                msg += " " + std::to_string(age) + " " + std::to_string(numPosts) + " " + std::to_string(numFollowers) + " " + std::to_string(numFollowing);
+            }
+            if(msgOpcode == 4){
+                char followUnfollowArr[1];
+                connection.getBytes(followUnfollowArr, 2);
+                short followUnfollow = bytesToShort(followUnfollowArr);
+                std::string username;
+                connection.getFrameAscii(username, '\0');
+                msg += " " + std::to_string(followUnfollow) + " " + username;
+            }
+
             string optionalArg;
 //            bool isArg = connection.getFrameAscii(optionalArg, ' ');
 //            while(isArg) {

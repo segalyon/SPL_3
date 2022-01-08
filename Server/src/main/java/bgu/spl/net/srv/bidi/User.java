@@ -23,6 +23,8 @@ public class User {
         this.numOfPosts=0;
         following=new LinkedList<>();
         followers=new LinkedList<>();
+        blockingUsers=new LinkedList<>();
+        blockersUsers=new LinkedList<>();
     }
     public String getBirthday(){return birthday;}
     public List<User> getFollowing() {

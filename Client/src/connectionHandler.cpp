@@ -78,10 +78,11 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
     // Stop when we encounter the null character.
     // Notice that the null character is not appended to the frame string.
     try {
-        do{
-            getBytes(&ch, 1);
+        getBytes(&ch, 1);
+        while(delimiter != ch){
             frame.append(1, ch);
-        }while (delimiter != ch);
+            getBytes(&ch, 1);
+        }
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;

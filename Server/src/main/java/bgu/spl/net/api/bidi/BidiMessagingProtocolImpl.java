@@ -95,18 +95,17 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 case 4:
                     Follow follow = (Follow) message;
                     if (!(db.getUserByUsername(follow.getUsername()) == null)) {
-                        if (!(db.isConnected(follow.getUsername()))) {
-                            List<byte[]> optional = new LinkedList<>();
-                            optional.add(follow.getUsername().getBytes());
-                            if (!user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 1) {
-                                user.follow(db.getUserByUsername(follow.getUsername()));
-                                connection.send(connectionId, new Ack(message.getOpcode(), optional));
-                                break;
-                            } else if (user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 0) {
-                                user.unfollow(db.getUserByUsername(follow.getUsername()));
-                                connection.send(connectionId, new Ack(message.getOpcode(), optional));
-                                break;
-                            }
+                        List<byte[]> optional = new LinkedList<>();
+                        optional.add(shortToBytes(follow.isFollow()));
+                        optional.add(follow.getUsername().getBytes());
+                        if (!user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 1) {
+                            user.follow(db.getUserByUsername(follow.getUsername()));
+                            connection.send(connectionId, new Ack(message.getOpcode(), optional));
+                            break;
+                        } else if (user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 0) {
+                            user.unfollow(db.getUserByUsername(follow.getUsername()));
+                            connection.send(connectionId, new Ack(message.getOpcode(), optional));
+                            break;
                         }
                     }
                     connection.send(connectionId, new ErrorMessage(message.getOpcode()));
@@ -134,7 +133,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     }
                     // add followers to prevent double msgs
                     for (User follower : followers) {
-                        if (users.contains(follower.getUsername()))
+                        if (!users.contains(follower.getUsername()))
                             users.add(follower.getUsername());
                     }
                     // send to all
@@ -165,10 +164,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     break;
                 case 7:
                     LogStat logStat = (LogStat) message;
-                    for(String s:logStat.getUsers()){
-                        User spe= db.getUserByUsername(s);
-                        if(!user.didUserBlockedMe(spe)){
-                            sendStatOfUser(spe, message.getOpcode());
+                    for(User current: db.getUsers()){
+                        if(!user.didUserBlockedMe(current)){
+                            sendStatOfUser(current, message.getOpcode());
                         }
                     }
                     break;
@@ -234,5 +232,12 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             db.addWaitingMessage(db.getUserByUsername(username), notification);
         }
         else  connection.send(db.getConnection(username),notification);
+    }
+    private byte[] shortToBytes(short num)
+    {
+        byte[] bytesArr = new byte[2];
+        bytesArr[0] = (byte)((num >> 8) & 0xFF);
+        bytesArr[1] = (byte)(num & 0xFF);
+        return bytesArr;
     }
 }

@@ -19,6 +19,7 @@ public class DataBase {
     private ConcurrentHashMap<String,User >  userByUserName;
     private ConcurrentHashMap<String,Integer> currentUsers;
     private ConcurrentLinkedQueue<Message> posts;
+    private List<User> users;
     private Object lockerRegister;
     private List<String> filterWords;
 
@@ -34,6 +35,7 @@ public class DataBase {
         this.userByUserName=new ConcurrentHashMap<>();
         this.currentUsers=new ConcurrentHashMap<>();
         this.posts= new ConcurrentLinkedQueue<>();
+        this.users = new LinkedList<>();
         lockerRegister = new Object();
     }
     public void addToPosts(Message postpm){
@@ -43,7 +45,7 @@ public class DataBase {
         waitingMessageListByUser.get(user).add(msg);
     }
     public Queue<Message> getWaitingMessagesForThisUser(String username){
-        return waitingMessageListByUser.get(username);
+        return waitingMessageListByUser.get(getUserByUsername(username));
     }
     public boolean isRegisterd(String username) {
         return userByUserName.containsKey(username);
@@ -53,11 +55,15 @@ public class DataBase {
         User user=new User(register.getUsername(), register.getPassword(), register.getBirthday());
         waitingMessageListByUser.put(user, new LinkedList<>());
         userByUserName.put(register.getUsername(),user);
+        users.add(user);
     }
 
     //returns a user by the username, if no such user exists returns null
     public User getUserByUsername(String username){
         return userByUserName.get(username);
+    }
+    public List<User> getUsers(){
+        return users;
     }
     public Integer getConnection(String username){return currentUsers.get(username);}
     public Integer removeConnection(String username)
