@@ -94,7 +94,7 @@ void SenderChannel::run() {
             string content = "";
             if(inputVectors.size() > 2) {
                 content = inputVectors[2];
-                for (int i = 3; i < inputVectors.size() - 1; ++i) {
+                for (int i = 3; i < inputVectors.size(); ++i) {
                     content += " " + inputVectors[i];
                 }
             }
