@@ -63,11 +63,6 @@ void ReceiverChannel::run() {
             }
 
             string optionalArg;
-//            bool isArg = connection.getFrameAscii(optionalArg, ' ');
-//            while(isArg) {
-//                msg += " " + optionalArg;
-//                isArg = connection.getFrameAscii(optionalArg, ' ');
-//            }
         }
         // ERROR
         if (opcode == 11) {
@@ -79,6 +74,11 @@ void ReceiverChannel::run() {
 
         // print
         cout<<msg<<endl;
+
+        // clean msg
+        //char cleanArr[1];
+        //while(connection.getBytes(cleanArr, 1)){
+        //}
 
         // login/logout
         if(msg == "ACK 2") {

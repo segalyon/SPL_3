@@ -5,7 +5,6 @@
 #ifndef CLIENT_CHANNEL_H
 #define CLIENT_CHANNEL_H
 
-#endif //CLIENT_CHANNEL_H
 #include "../include/connectionHandler.h"
 #include <thread>
 #include <iostream>
@@ -27,3 +26,5 @@ protected:
     short bytesToShort(char* bytesArr);
     string getCurrentDatetime();
 };
+
+#endif //CLIENT_CHANNEL_H
