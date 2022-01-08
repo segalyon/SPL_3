@@ -98,6 +98,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                         List<byte[]> optional = new LinkedList<>();
                         optional.add(shortToBytes(follow.isFollow()));
                         optional.add(follow.getUsername().getBytes());
+                        optional.add(shortToBytes((short)'\0'));
                         if (!user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 1) {
                             user.follow(db.getUserByUsername(follow.getUsername()));
                             connection.send(connectionId, new Ack(message.getOpcode(), optional));
@@ -217,11 +218,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 year+=c;
             counter++;
         }
-        String age= String.valueOf(2022-Integer.parseInt(year));
-        result.add(age.getBytes());
-        result.add(String.valueOf(receipentUser.getNumOfPosts()).getBytes());
-        result.add(String.valueOf(receipentUser.getFollowers().size()).getBytes());
-        result.add(String.valueOf(receipentUser.getFollowing().size()).getBytes());
+        int age= 2022-Integer.parseInt(year);
+        result.add(shortToBytes((short)(age)));
+        result.add(shortToBytes((short)(receipentUser.getNumOfPosts())));
+        result.add(shortToBytes((short)(receipentUser.getFollowers().size())));
+        result.add(shortToBytes((short)(receipentUser.getFollowing().size())));
         connection.send(connectionId,new Ack(opcode, result));
 
     }
