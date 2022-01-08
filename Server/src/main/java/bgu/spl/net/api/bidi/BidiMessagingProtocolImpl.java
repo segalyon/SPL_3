@@ -99,14 +99,17 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                         optional.add(shortToBytes(follow.isFollow()));
                         optional.add(follow.getUsername().getBytes());
                         optional.add(new byte[]{ '\0' });
-                        if (!user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 1) {
-                            user.follow(db.getUserByUsername(follow.getUsername()));
-                            connection.send(connectionId, new Ack(message.getOpcode(), optional));
-                            break;
-                        } else if (user.isFollowing(db.getUserByUsername(follow.getUsername())) && follow.isFollow() == (short) 0) {
-                            user.unfollow(db.getUserByUsername(follow.getUsername()));
-                            connection.send(connectionId, new Ack(message.getOpcode(), optional));
-                            break;
+                        User spe = db.getUserByUsername(follow.getUsername());
+                        if(!user.didUserBlockedMe(spe)) {
+                            if (!user.isFollowing(spe) && follow.isFollow() == (short) 1) {
+                                user.follow(spe);
+                                connection.send(connectionId, new Ack(message.getOpcode(), optional));
+                                break;
+                            } else if (user.isFollowing(spe) && follow.isFollow() == (short) 0) {
+                                user.unfollow(spe);
+                                connection.send(connectionId, new Ack(message.getOpcode(), optional));
+                                break;
+                            }
                         }
                     }
                     connection.send(connectionId, new ErrorMessage(message.getOpcode()));
@@ -166,7 +169,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 case 7:
                     LogStat logStat = (LogStat) message;
                     for(User current: db.getUsers()){
-                        if(!user.didUserBlockedMe(current)){
+                        if(!user.didUserBlockedMe(current) && !current.didUserBlockedMe(user)){
                             sendStatOfUser(current, message.getOpcode());
                         }
                     }
