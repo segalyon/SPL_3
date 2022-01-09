@@ -14,7 +14,7 @@ void ReceiverChannel::run() {
             // public/PM
             char PMorPublic[1];
             connection.getBytes(PMorPublic, 1);
-            short pmOrPublic = bytesToShort(PMorPublic);
+            short pmOrPublic = (short )PMorPublic[0];
             if(pmOrPublic==2)
                 msg += " Public";
             else

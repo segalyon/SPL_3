@@ -143,7 +143,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     }
                     // send to all
                     for (String sendTo : users) {
-                        sendNotificationToUser(sendTo, user.getUsername(), (short) 0, post.getContent());
+                        sendNotificationToUser(sendTo, user.getUsername(), (short) 2, post.getContent());
                     }
                     connection.send(connectionId, new Ack(message.getOpcode(), null));
                     db.addToPosts(post);
@@ -157,8 +157,6 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                             success = true;
                             connection.send(connectionId, new Ack(message.getOpcode(), null));
                         }
-
-
                     }
                     if (!success) {
                         connection.send(connectionId, new ErrorMessage(message.getOpcode()));
@@ -167,22 +165,29 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                         String content= pm.getContent();
                         String currentword="";
                         int counter=0;
-                        for(char c:content.toCharArray()){
-                            counter++;
-                            if(c!=' ')
-                                currentword+=c;
-                            else if(db.getFilterWords().contains(currentword)){
-                                result+="<filtered> ";
-                                currentword="";
-                            }
-                            else {result+=currentword; currentword="";}
-                            if(counter==content.length()) {
-                                if (!db.getFilterWords().contains(currentword)) {
-                                    result += currentword;
-                                } else result += "<filtered>";
-                            }
+
+                        for(String word: db.getFilterWords()){
+                            content = content.replaceAll(word, "<filtered>");
                         }
-                        sendNotificationToUser(pm.getUsername(), user.getUsername(), (short) 1, result);
+
+
+//
+//                        for(char c:content.toCharArray()){
+//                            counter++;
+//                            if(c!=' ')
+//                                currentword+=c;
+//                            else if(db.getFilterWords().contains(currentword)){
+//                                result+="<filtered> ";
+//                                currentword="";
+//                            }
+//                            else {result+=currentword; currentword="";}
+//                            if(counter==content.length()) {
+//                                if (!db.getFilterWords().contains(currentword)) {
+//                                    result += currentword;
+//                                } else result += "<filtered>";
+//                            }
+//                        }
+                        sendNotificationToUser(pm.getUsername(), user.getUsername(), (short) 1, content);
                       //  db.addToPosts(pm);
                     }
                     break;

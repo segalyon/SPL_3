@@ -32,12 +32,14 @@ short Channel::bytesToShort(char* bytesArr)
 }
 
 string Channel::getCurrentDatetime() {
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
+    //auto t = std::time(nullptr);
+    //auto tm = *std::localtime(&t);
 
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
-    auto str = oss.str();
+    //std::ostringstream oss;
+    //oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
+    //auto str = oss.str();
+
+    return "16-01-2022 11:00";
 }
 
 std::thread Channel::getThread() {

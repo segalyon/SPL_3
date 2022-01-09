@@ -29,7 +29,8 @@ public class Notification extends Message {
     public byte[] messageToEncode(){
         String filteredContent = content;
         byte[] opcodeArr = shortToBytes(getOpcode());
-        byte[] typeArr = shortToBytes(pmOrPublic);
+        byte[] typeArr = new byte[1];
+        typeArr[0] = (byte) pmOrPublic;
         byte[] seperatorArr = shortToBytes((short)'\0');
         byte[] postingUserArr = postingUser.getBytes();
         // filter content

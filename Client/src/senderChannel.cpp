@@ -91,13 +91,12 @@ void SenderChannel::run() {
             // send username
             connection.sendFrameAscii(inputVectors[1], '\0');
             // send content
-            string content = "";
+            string content = " ";
             if(inputVectors.size() > 2) {
                 content = inputVectors[2];
                 for (int i = 3; i < inputVectors.size(); ++i) {
                     content += " " + inputVectors[i];
                 }
-                content+=" "+ inputVectors[inputVectors.size()-1];
             }
             connection.sendFrameAscii(content, '\0');
             // send current date
